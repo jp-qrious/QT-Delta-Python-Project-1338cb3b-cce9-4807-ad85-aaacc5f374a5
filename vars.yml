@@ -1,0 +1,21 @@
+project-name: My Project
+
+# The PEP-8 compliant package name (lowercase and underscores only)
+python-package-name: project
+
+# This is the URL of the github repo. Must be https.
+project-github-url: https://github.com/qriousnz/My Project
+
+# The docker registry URL used for the base image.
+docker-registry: ghcr.io/qriousnz/my project
+
+# Tags to identify images if in the same repo as other images with different purposes
+base-docker-tag: base
+dev-docker-tag: dev
+prod-docker-tag: prod
+lock-docker-tag: lock
+latest-docker-tag: latest
+
+# Base python Docker image
+dev-base-python-image: python:3.11
+prod-base-python-image: python:3.11

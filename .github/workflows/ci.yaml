@@ -1,0 +1,64 @@
+name: My Project
+
+
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Test Coverage
+        run: make test-dockerised test-args=--junitxml=report.xml DEV_TAG=${{ vars.BUILD_TAG }}-${{ github.sha }}
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-coverage-report
+          path: |
+            output/test/test-coverage.xml
+            report.xml
+          retention-days: 1
+
+      - name: Lint
+        run: |
+          make fmt-dockerised black-args=--check isort-args='--check-only --diff' DEV_TAG=${{ vars.BUILD_TAG }}-${{ github.sha }}
+          make lint-dockerised DEV_TAG=${{ vars.BUILD_TAG }}-${{ github.sha }}
+
+  sonar:
+    runs-on: ubuntu-latest
+    env:
+      SONAR_USER_HOME: "${{ github.workspace }}/.sonar"
+      GIT_DEPTH: 0
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Get branch name (merge)
+        if: github.event_name != 'pull_request'
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/} | tr / -)" >> $GITHUB_ENV
+
+      - name: Get branch name (pull request)
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: echo "BRANCH_NAME=$(echo ${GITHUB_HEAD_REF} | tr / -)" >> $GITHUB_ENV
+
+      - name: Sonar Report
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=${{ env.BRANCH_NAME }}
+
+

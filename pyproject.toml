@@ -1,0 +1,67 @@
+[tool.poetry]
+name = "project"
+version = "0.1.0"
+description = ""
+authors = ["Anonymous <anonymous@qrious.co.nz>"]
+packages = [{ include = "project", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+boto3 = "^1.12.39"
+coloredlogs = "^14.0"
+pre-commit = "^3.3.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0.2"
+moto = "^1.3.14"
+pytest-cov = "^2.8.1"
+twine = "^3.1.1"
+black = "^22.6.0"
+flake8 = "^3.7.9"
+coverage = "^5.3"
+mypy = "^0.902"
+isort = "^5.6.4"
+jupyter = "^1.0.0"
+jupytext = "^1.14.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-v --color=yes --durations=0 -s"
+testpaths = ["tests"]
+filterwarnings = ["ignore: .* :DeprecationWarning"]
+
+[tool.black]
+exclude = '''
+(
+  /(
+      \.eggs
+    | \.git
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+    | docker/venv
+    | venv
+  )/
+)
+'''
+
+[tool.isort]
+multi_line_output = 3
+include_trailing_comma = true
+force_grid_wrap = 0
+use_parentheses = true
+ensure_newline_before_comments = true
+line_length = 88
+skip = "notebooks"
+
+[tool.mypy]
+ignore_missing_imports = true
